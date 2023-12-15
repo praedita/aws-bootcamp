@@ -1,6 +1,6 @@
 # Select the newest AMI
 
-data "aws_ami" "latest_linux_ami" {
+data "aws_ami" "latest-linux-ami" {
   most_recent = true
   owners      = ["amazon"]
 
@@ -13,25 +13,28 @@ data "aws_ami" "latest_linux_ami" {
 # Create an EC2 instance
 
 resource "aws_instance" "capstone-dev-instance" {
-  ami                         = data.aws_ami.latest_linux_ami.id
+  ami                         = data.aws_ami.latest-linux-ami.id
   instance_type               = var.instance_type
   availability_zone           = data.aws_availability_zones.available.names[0]
   associate_public_ip_address = true
-  key_name                    = "vockey"
-  vpc_security_group_ids      = [aws_security_group.capstone-dev-instance-sg.id]
+  key_name                    = "admin_us_east_1"
+  vpc_security_group_ids      = [aws_security_group.capstone-dev-web-instance-sg.id]
   subnet_id                   = aws_subnet.capstone-dev-web-public-1a-1.id
+  iam_instance_profile        = "deham9_ec2"
+  count                       = 1
   tags = {
     Name = "capstoneEC2Instance"
   }
-  # user_data = file("user_data.sh")
+
+  user_data = file("user_data.sh")
 
   provisioner "local-exec" {
     command = "echo Instance Type = ${self.instance_type}, Instance ID = ${self.id}, Public IP = ${self.public_ip}, AMI ID = ${self.ami} >> metadata"
   }
 }
 
-# Create a Security Group for the VPC
-resource "aws_security_group" "capstone-dev-instance-sg" {
+# Create a security group for the VPC
+resource "aws_security_group" "capstone-dev-web-instance-sg" {
   name        = "capstoneSgInstance"
   description = "Allow traffic to the instance"
   vpc_id      = aws_vpc.capstone-dev-vpc.id
@@ -72,6 +75,6 @@ resource "aws_security_group" "capstone-dev-instance-sg" {
     cidr_blocks = [var.cidr_blocks]
   }
   tags = {
-    Name = "capstoneSgInstance"
+    Name = "capstoneSgWebInstance"
   }
 }
