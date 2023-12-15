@@ -8,7 +8,7 @@ terraform {
   required_version = ">= 0.14.9"
 }
 
-# Provider profile and region in which all the resources will create
+# Configure the AWS provider and region
 provider "aws" {
   profile = "default"
   region  = var.aws_region
