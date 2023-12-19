@@ -1,4 +1,4 @@
-# AWS Cloud Developer Bootcamp Project
+# AWS Cloud Computing Bootcamp Project
 
 ## Objective
 
